@@ -22,6 +22,7 @@ use Modules\Shared\Services\FileUploadService;
 use Redirect;
 use Yajra\DataTables\Facades\DataTables;
 use DB;
+use Modules\Shared\Helpers\CommonHelper;
 
 class PropertyRepository implements PropertyRepositoryInterface
 {
@@ -1536,6 +1537,9 @@ class PropertyRepository implements PropertyRepositoryInterface
         $tax = $price_details->getData()->tax_fee;
         $total = $price_details->getData()->total_amount;
 
+        // Add rewards
+        $this->addRewards($total, $handler);
+
         // add booking
         $bookingData = GenericFormData::fromRequest($request, [
             'check_in', 'check_out', 'code', 'bedrooms', 'adults', 'children',
@@ -1583,6 +1587,13 @@ class PropertyRepository implements PropertyRepositoryInterface
 
         return $booking;
 
+    }
+
+    // Add Rewards
+    public function addRewards($total, $handler) {
+        $points = CommonHelper::calculateRewardPoints($total);
+        $genericData = GenericFormData::fromArray(['reward_points' => $points + auth()->user()->profile->reward_points]);
+        $handler->update($genericData, auth()->user()->profile);
     }
 
     public function allBookings($request)

@@ -84,7 +84,16 @@
                         </span>
                     </div>
                     <div class="card-body">
-                        <h5 class="card-title fw-bold text-dark">{{ $booking->property->name }}</h5>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="card-title fw-bold text-dark mb-0">
+                                {{ $booking->property->name }}
+                            </h5>
+                            <div class="d-flex align-items-center small" data-bs-toggle="tooltip" data-bs-placement="top" title="You earned {{ $booking->reward_points }} Reward Points">
+                                <i class="bi bi-star-fill fs-5 me-1 text-warning"></i>
+                                <span class="fw-bold">@if ($booking->status == 'confirmed') {{ $booking->reward_points }} @else 0 @endif</span>
+                            </div>
+                        </div>
+
                         <p class="text-muted small mb-2">
                             <i class="bi bi-geo-alt-fill me-1"></i>{{ $booking->property->address }}
                         </p>
@@ -107,10 +116,13 @@
                         @endrole
 
                         <div class="d-flex justify-content-between align-items-center">
-                            <h6 class="text-primary fw-bold mb-0 text-truncate">₹{{ number_format($booking->total, 2) }} / {{ (isset($booking->duration) && !empty($booking->duration)) ? $booking->duration : 'N/A' }} </h6>
+                            <h6 class="text-primary fw-bold mb-0 text-truncate">
+                                ₹{{ number_format($booking->total, 2) }} / {{ $booking->duration ?? 'N/A' }}
+                            </h6>
                             <a href="{{ route('view.booking', [$booking->property->slug, $booking->id]) }}" class="btn btn-sm btn-outline-dark rounded-pill">View</a>
                         </div>
                     </div>
+
                 </div>
             </div>
             @endforeach

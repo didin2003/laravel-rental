@@ -432,6 +432,14 @@
   // });
 </script>
 
+<!--  Tooltip Activation Code -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tooltips.forEach(el => new bootstrap.Tooltip(el));
+  });
+</script>
+
   @yield('scripts')
 </body>
 </html>

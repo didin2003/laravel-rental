@@ -21,7 +21,7 @@
             <div class="card-body p-2">
                 <i class="bi bi-star-fill text-warning fs-4"></i>
                 <p class="mb-0 small text-muted">Rewards</p>
-                <strong class="text-dark">125 Points</strong>
+                <strong class="text-dark">{{auth()->user()->profile->reward_points }} Points</strong>
             </div>
         </div>
     </div>
@@ -57,7 +57,7 @@
         </a>
     @endrole
     <a href="{{ route('manage.bookings') }}" class="nav-link text-white @activeLink('manage.bookings')">
-        <i class="bi bi-calendar-event-fill me-2"></i> Manage Bookings
+        <i class="bi bi-calendar-event-fill me-2"></i> @role(['super_admin', 'admin']) Manage @endrole @role(['user']) My @endrole Bookings
     </a>
     <a href="{{ route('profile') }}" class="nav-link text-white @activeLink('profile')">
         <i class="bi bi-person-circle me-2"></i> Profile

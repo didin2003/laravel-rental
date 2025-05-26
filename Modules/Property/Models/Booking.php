@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Auth\Models\User;
 use Modules\Shared\Models\Reminder;
+use Modules\Shared\Helpers\CommonHelper;
+
 
 class Booking extends Model
 {
@@ -61,4 +63,13 @@ class Booking extends Model
             });
         }
     }
+
+        // Accessors
+        public function getRewardPointsAttribute($value)
+        {
+            $points = CommonHelper::calculateRewardPoints($this->total);
+            return $points;
+        }
+    
+        protected $appends = ['reward_points'];
 }
