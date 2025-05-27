@@ -10,11 +10,11 @@
     @role(['user'])
     {{-- Guest Level & Rewards --}}
     <div class="d-flex justify-content-between mb-4">
-        <div class="card text-center border-0 shadow-sm" style="width: 48%;">
+        <div class="card text-center border-0 shadow-sm" style="width: 48%; cursor: pointer;" data-bs-toggle="modal" data-bs-target="#guestLevelMapModal">
             <div class="card-body p-2">
                 <i class="bi bi-person-badge-fill text-primary fs-4"></i>
                 <p class="mb-0 small text-muted">Guest Level</p>
-                <strong class="text-pink">HSEXplorer</strong>
+                <strong class="text-pink">{{ auth()->user()->guest_level }}</strong>
             </div>
         </div>
         <div class="card text-center border-0 shadow-sm" style="width: 48%;">

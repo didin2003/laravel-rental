@@ -11,6 +11,7 @@ use Laratrust\Contracts\LaratrustUser;
 use Laratrust\Traits\HasRolesAndPermissions;
 use Laravel\Sanctum\HasApiTokens;
 use Modules\Shared\Models\Reminder;
+use Modules\Shared\Helpers\CommonHelper;
 
 class User extends Authenticatable implements LaratrustUser
 {
@@ -73,5 +74,11 @@ class User extends Authenticatable implements LaratrustUser
         return $this->profile->phone ?? null;
     }
 
-    protected $appends = ['phone'];
+    public function getGuestLevelAttribute($value)
+    {
+        $level = CommonHelper::calculateGuestLevel($this->profile->reward_points);
+        return $level;
+    }
+
+    protected $appends = ['phone', 'guest_level'];
 }

@@ -15,5 +15,16 @@ class CommonHelper
     
         return config('rewards.default', 600);
     }
+
+    public static function calculateGuestLevel(float|int $total): string
+    {
+        foreach (config('guest_level.tiers') as $limit => $level) {
+            if ($total <= $limit) {
+                return $level;
+            }
+        }
+    
+        return config('guest_level.default', 'Pro Explorer');
+    }
     
 }

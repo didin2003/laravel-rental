@@ -171,6 +171,26 @@
     .modal-footer {
       border-top: 0;
     }
+
+    /* Guest Level Modal */
+    .level-circle {
+      transition: transform 0.3s ease;
+      box-shadow: 0 0 0 rgba(0, 0, 0, 0.1);
+    }
+
+    .glow {
+      box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+    }
+
+    .blink {
+      animation: blink 1.5s infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0.5; }
+    }
+
+
 </style>
 
   @yield('styles')
@@ -234,6 +254,97 @@
         </div>
       </div>
     </div>
+
+    <!-- Game-Style Guest Level Modal -->
+    <div class="modal fade" id="guestLevelMapModal" tabindex="-1" aria-labelledby="guestLevelMapModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title" id="guestLevelMapModalLabel">🚀 Your Guest Journey</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body py-4 px-3" style="max-height: 600px; overflow-y: auto;">
+
+            @php
+              $tiers = [
+                  1000 => 'HS Explorer',
+                  2000 => 'Silver Voyager',
+                  3000 => 'Gold Pathfinder',
+                  4000 => 'Platinum Nomad',
+                  5000 => 'Diamond Trailblazer',
+                  PHP_INT_MAX => 'Pro Explorer' // Above all
+              ];
+
+              $tierKeys = array_keys($tiers);
+              $currentPoints = auth()->user()->profile->reward_points ?? 0;
+              $currentLabel = auth()->user()->guest_level;
+
+              // Find the next level
+              $nextLevelPoints = null;
+              $nextLabel = null;
+              foreach ($tiers as $points => $label) {
+                  if ($points > $currentPoints) {
+                      $nextLevelPoints = $points;
+                      $nextLabel = $label;
+                      break;
+                  }
+              }
+            @endphp
+
+            <!-- Current Points Display -->
+            <div class="text-center mb-4">
+              <h5 class="mb-1">🎯 You have <span class="text-success">{{ $currentPoints }}</span> points</h5>
+            </div>
+
+            <!-- Journey Map -->
+            <div class="d-flex flex-column align-items-center gap-5 position-relative">
+              @php
+                $isPassed = true;
+                $prev = 1;
+              @endphp
+
+              @foreach ($tiers as $points => $label)
+                @php
+                  $rangeStart = $prev;
+                  $rangeEnd = $points === PHP_INT_MAX ? '∞' : $points;
+                  $isCurrent = $currentLabel === $label;
+                  $isUpcoming = !$isCurrent && $isPassed && $points > $currentPoints;
+                  if ($isCurrent) $isPassed = false;
+                  $prev = $points + 1;
+                @endphp
+
+                <div class="text-center">
+                  <div class="rounded-circle mx-auto level-circle d-flex justify-content-center align-items-center 
+                    {{ $isCurrent ? 'bg-success text-white glow blink' : ($isUpcoming ? 'bg-warning text-dark' : 'bg-light text-muted') }}"
+                    style="width: 70px; height: 70px;">
+                    <i class="bi bi-star-fill fs-4 text-warning"></i>
+                  </div>
+                  <div class="mt-2 fw-semibold fs-6 {{ $isCurrent ? 'text-success' : ($isUpcoming ? 'text-warning' : 'text-muted') }}">
+                    {{ $label }}
+                  </div>
+                  <small class="text-muted">
+                    {{ $rangeStart }} - {{ is_numeric($rangeEnd) ? $rangeEnd : '∞' }} pts
+                  </small>
+
+                  @if ($isUpcoming && is_numeric($rangeEnd))
+                    <div class="mt-1">
+                      <span class="badge bg-warning text-dark small">Next level at {{ $rangeEnd }} pts</span>
+                    </div>
+                  @endif
+                </div>
+
+                @if (!$loop->last)
+                  <div style="width: 3px; height: 40px; background-color: #dee2e6;"></div>
+                @endif
+              @endforeach
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
 
 
     <!-- Toast Message -->
