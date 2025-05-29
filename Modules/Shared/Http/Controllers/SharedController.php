@@ -15,6 +15,7 @@ use Modules\Shared\Http\Requests\AddTestimonialRequest;
 use Modules\Shared\Http\Requests\EditTestimonialRequest;
 use Modules\Shared\Http\Requests\TestimonialToggleRequest;
 use Modules\Shared\Http\Requests\TestimonialRemoveRequest;
+use Modules\Shared\Http\Requests\MultipleTestimonialRemoveRequest;
 use Modules\Shared\Http\Requests\AddFaqRequest;
 use Modules\Shared\Http\Requests\EditFaqRequest;
 use Modules\Shared\Http\Requests\FaqToggleRequest;
@@ -87,6 +88,21 @@ class SharedController extends Controller
     public function deleteTestimonial(TestimonialRemoveRequest $request, HandleFormSubmission $handler)
     {
         return $this->sharedRepository->deleteTestimonial($request, $handler);
+    }
+
+    public function deleteMultipleTestimonial(MultipleTestimonialRemoveRequest $request, HandleFormSubmission $handler)
+    {
+        return $this->sharedRepository->deleteMultipleTestimonial($request, $handler);
+    }
+
+    public function enableMultipleTestimonial(MultipleTestimonialRemoveRequest $request, HandleFormSubmission $handler)
+    {
+        return $this->sharedRepository->enableMultipleTestimonial($request, $handler);
+    }
+
+    public function disableMultipleTestimonial(MultipleTestimonialRemoveRequest $request, HandleFormSubmission $handler)
+    {
+        return $this->sharedRepository->disableMultipleTestimonial($request, $handler);
     }
 
     public function editTestimonial(EditTestimonialRequest $request, HandleFormSubmission $handler, Testimonial $testimonial)

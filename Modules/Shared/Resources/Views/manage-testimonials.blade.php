@@ -151,18 +151,45 @@
             </div>
         </div>
         <div class="card-body">
-            <table class="table table-bordered table-striped" id="testimonials-table" width="100%">
-                <thead class="table-light">
-                    <tr>
-                        <th>#</th>
-                        <th>Property Info</th>
-                        <th>Testimonials Info</th>
-                        <!-- <th class="text-center">Enabled/Disabled</th> -->
-                        <!-- <th class="text-center">Action</th> -->
-                    </tr>
-                </thead>
-            </table>
+          <table class="table table-bordered table-striped table-hover text-nowrap" id="testimonials-table" width="100%">
+            <thead class="table-light align-middle">
+              <tr>
+                <th style="width: 50px;" class="text-center">#</th>
+                <th style="min-width: 200px;">Property Info</th>
+                <th>
+                  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2">
+                    <!-- Left Buttons -->
+                    <div class="d-flex flex-wrap gap-2">
+                      <button type="button" class="btn btn-sm btn-outline-danger deleteAllTestimonials">
+                        <i class="bi bi-trash3-fill me-1"></i> Delete All
+                      </button>
+                      <button type="button" class="btn btn-sm btn-outline-success enableAllTestimonials">
+                        <i class="bi bi-check-circle-fill me-1"></i> Enable All
+                      </button>
+                      <button type="button" class="btn btn-sm btn-outline-secondary disableAllTestimonials">
+                        <i class="bi bi-x-circle-fill me-1"></i> Disable All
+                      </button>
+                    </div>
+
+                    <!-- Right Select All -->
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                      <div class="form-check mb-0">
+                        <input class="form-check-input selectAllTestimonials" type="checkbox" id="selectAllTestimonials">
+                        <label class="form-check-label small fw-semibold text-muted" for="selectAllTestimonials">
+                          Select All Testimonials
+                        </label>
+                      </div>
+                      <span class="fw-semibold text-muted small d-none d-md-inline">| Testimonials Info</span>
+                    </div>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <!-- DataTable body -->
+          </table>
         </div>
+
+
     </div>
 </div>
 @endsection
@@ -338,11 +365,16 @@
                 columns: [
                     { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
                     { data: 'property_info', name: 'name' },
-                    { data: 'testimonials_info', name: 'property.testimonials.user.name' },
+                    { data: 'testimonials_info', name: 'property.testimonials.user.name', orderable: false },
                     // { data: 'status_action', name: 'status_action', orderable: false, searchable: false, className: 'text-center'},
                     // { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
                 ]
             });
+
+              // 🔄 Pagination Click or Any Table Redraw Event
+              testimonialsTable.on('draw', function () {
+                $('#selectAllTestimonials').prop('checked', false);
+              });
 
             $(document).on('click', '.delete-testimonial', function () {
               const id = $(this).data('id');
@@ -364,7 +396,105 @@
                     }
                 });
               }
-          });
+            });
+
+            // Delete All Testimonials Button Click
+            $('.deleteAllTestimonials').click(function () {
+              var testimonalIds = $('.testimonial-check:checked').map(function() {
+                return $(this).data('id');
+              }).get();
+              if (testimonalIds.length === 0) {
+                alert('Please select at least one testimonial to delete.');
+                return;
+              }
+              console.log('Checked IDs:', testimonalIds);
+              if (confirm("Are you sure you want to delete this testimonials?")) {
+                $.ajax({
+                  url: '{{ route("delete.multiple.testimonials") }}',
+                  type: 'DELETE',
+                  data: {
+                      _token: '{{ csrf_token() }}',
+                      ids: testimonalIds
+                  },
+                  success: function (response) {
+                      toastr.success(response.message);
+
+                      testimonialsTable.ajax.reload(null, false); // false to keep the current paging
+
+                      $('#selectAllTestimonials').prop('checked', false);
+
+                  },
+                  error: function () {
+                      toastr.error('Failed to update status.');
+                  }
+                });
+              }
+            });
+
+            // Enabled All Testimonials Button Click
+            $('.enableAllTestimonials').click(function () {
+              var testimonalIds = $('.testimonial-check:checked').map(function() {
+                return $(this).data('id');
+              }).get();
+              if (testimonalIds.length === 0) {
+                alert('Please select at least one testimonial to enable.');
+                return;
+              }
+              console.log('Checked IDs:', testimonalIds);
+              if (confirm("Are you sure you want to enable this testimonials?")) {
+                $.ajax({
+                  url: '{{ route("enable.multiple.testimonials") }}',
+                  type: 'POST',
+                  data: {
+                      _token: '{{ csrf_token() }}',
+                      ids: testimonalIds
+                  },
+                  success: function (response) {
+                      toastr.success(response.message);
+
+                      testimonialsTable.ajax.reload(null, false); // false to keep the current paging
+
+                      $('#selectAllTestimonials').prop('checked', false);
+
+                  },
+                  error: function () {
+                      toastr.error('Failed to update status.');
+                  }
+                });
+              }
+            });
+
+            // Enabled All Testimonials Button Click
+            $('.disableAllTestimonials').click(function () {
+              var testimonalIds = $('.testimonial-check:checked').map(function() {
+                return $(this).data('id');
+              }).get();
+              if (testimonalIds.length === 0) {
+                alert('Please select at least one testimonial to disabled.');
+                return;
+              }
+              console.log('Checked IDs:', testimonalIds);
+              if (confirm("Are you sure you want to enable this testimonials?")) {
+                $.ajax({
+                  url: '{{ route("disable.multiple.testimonials") }}',
+                  type: 'POST',
+                  data: {
+                      _token: '{{ csrf_token() }}',
+                      ids: testimonalIds
+                  },
+                  success: function (response) {
+                      toastr.success(response.message);
+
+                      testimonialsTable.ajax.reload(null, false); // false to keep the current paging
+
+                      $('#selectAllTestimonials').prop('checked', false);
+                  },
+                  error: function () {
+                      toastr.error('Failed to update status.');
+                  }
+                });
+              }
+            });
         });
 
         $(document).on('change', '.testimonials-toggle', function () {
@@ -417,6 +547,27 @@
           action = action.replace(/\/0$/, '/' + testimonialsId);
           form.attr('action', action);
         });
+
+        // Select Check Box click To Select All Checkbox
+        $("#selectAllTestimonials").click(function () {
+            // Individual Property
+            $(".property-check").prop('checked', $(this).prop('checked'));
+            // Individual Testimonals Checked
+            $(".testimonial-check").prop('checked', $(this).prop('checked'));
+        });
+
+        // Property Select All Checkbox click Own Testimonials Select
+        $(document).on('click', '.property-check', function () {
+          $('#selectAllTestimonials').prop('checked', $('.property-check:checked').length === $('.property-check').length);
+          $('[data-property-id="' + $(this).data('id') + '"]').prop('checked', $(this).prop('checked'));
+        });
+
+        // testimonal Click To Trigger Select All Checkbox
+        $(document).on('click', '.testimonial-check', function () {
+          $('#selectAllTestimonials').prop('checked', $('.testimonial-check:checked').length === $('.testimonial-check').length);
+        });
+
+        // End Document Ready
       });
 
       $(document).on('click', '.edit-testimonial', function () {

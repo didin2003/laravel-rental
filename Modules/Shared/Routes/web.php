@@ -18,6 +18,9 @@ Route::middleware(['auth', 'web'])->group(function () {
         Route::get('manage-testimonials', [SharedController::class, 'manageTestimonials'])->name('manage.testimonials');
         Route::post('testimonials/toggle', [SharedController::class, 'testimonalsToggle'])->name('testimonials.toggle');
         Route::delete('delete-testimonial', [SharedController::class, 'deleteTestimonial'])->name('delete.testimonials');
+        Route::delete('delete-multiple-testimonial', [SharedController::class, 'deleteMultipleTestimonial'])->name('delete.multiple.testimonials');
+        Route::post('enable-multiple-testimonial', [SharedController::class, 'enableMultipleTestimonial'])->name('enable.multiple.testimonials');
+        Route::post('disable-multiple-testimonial', [SharedController::class, 'disableMultipleTestimonial'])->name('disable.multiple.testimonials');
         Route::put('edit-testimonial/{testimonial}', [SharedController::class, 'editTestimonial'])->name('edit.testimonial');
 
         // FAQS

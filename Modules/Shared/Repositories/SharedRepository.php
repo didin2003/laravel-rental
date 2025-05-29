@@ -73,66 +73,83 @@ class SharedRepository implements SharedRepositoryInterface
                     $property_name = e($row->name ?? 'N/A');
                     $address = e($row->address ?? 'N/A');
                     $images = optional($row->images)->pluck('image_path')->toArray();
-    
+                
                     $first_pricing = optional($row->pricings->first());
                     $pricing = e($first_pricing->pricing ?? 'N/A');
                     $pricing_type = e($first_pricing->pricing_type ?? 'N/A');
-    
+                
                     $carousel_id = 'carousel_'.$row->id;
                     $carousel_items = collect($row->images ?? [])
                         ->pluck('image_path')
                         ->map(function ($image, $index) {
                             $active = $index === 0 ? 'active' : '';
                             $url = asset('assets/images/property_images/'.$image);
-    
+                
                             return <<<HTML
-                                    <div class="carousel-item {$active}">
-                                        <img src="{$url}" class="d-block w-100" style="height:160px; object-fit:cover;">
-                                    </div>
-                                HTML;
+                                <div class="carousel-item {$active}">
+                                    <img src="{$url}" class="d-block w-100" style="height:160px; object-fit:cover;">
+                                </div>
+                            HTML;
                         })->implode('');
-    
+                
                     $carousel_html = count($images) ? '
-                            <div id="'.$carousel_id.'" class="carousel slide" data-bs-ride="carousel">
-                                <div class="carousel-inner">
-                                    '.$carousel_items.'
-                                </div>
-                                <button class="carousel-control-prev" type="button" data-bs-target="#'.$carousel_id.'" data-bs-slide="prev">
-                                    <span class="carousel-control-prev-icon"></span>
-                                </button>
-                                <button class="carousel-control-next" type="button" data-bs-target="#'.$carousel_id.'" data-bs-slide="next">
-                                    <span class="carousel-control-next-icon"></span>
-                                </button>
-                            </div>' : '<div class="text-muted">No Images</div>';
-    
+                        <div id="'.$carousel_id.'" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner">
+                                '.$carousel_items.'
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#'.$carousel_id.'" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon"></span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#'.$carousel_id.'" data-bs-slide="next">
+                                <span class="carousel-control-next-icon"></span>
+                            </button>
+                        </div>' : '<div class="text-muted">No Images</div>';
+                
+                    // Add checkbox with unique ID
+                    $checkbox_html = '
+                    <div class="d-flex justify-content-end align-items-center mb-1 pe-2">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input property-check" data-id="'.$row->id.'" id="checkbox_'.$row->id.'">
+                            <label class="form-check-label small" for="checkbox_'.$row->id.'">Select All Testimonials</label>
+                        </div>
+                    </div>';
+
+                    $testimonials = $row->testimonials;
+                    (isset($testimonials) && $testimonials->isNotEmpty() ? $checkbox_html : $checkbox_html = '');
+
+                
                     return '
-                                <div class="card shadow-sm border-0" style="max-width: 450px;">
-                                    <div class="row g-0 align-items-center">
-                                        <!-- Image Carousel on the LEFT -->
-                                        <div class="col-4 ps-2 py-2">
-                                            '.$carousel_html.'
-                                        </div>
-                                        <!-- Property Details on the RIGHT -->
-                                        <div class="col-8 pe-3 py-2">
-                                            <div class="card-body p-2">
-                                                <h6 class="card-title mb-1 text-primary fw-semibold text-truncate" title="'.$property_name.'">'.$property_name.'</h6>
-                                                <p class="mb-1 small"><strong>Type:</strong> '.$property_type.'</p>
-                                                <p class="mb-1 small text-truncate" title="'.$address.'">
-                                                    <strong>Address:</strong> '.$address.'
-                                                </p>
-                                                <p class="mb-0 small">
-                                                    <strong>Price:</strong> ₹'.$pricing.' <small>/'.$pricing_type.'</small>
-                                                </p>
-                                            </div>
-                                        </div>
+                        <div class="card shadow-sm border-0" style="max-width: 450px;">
+                            <!-- Top right checkbox -->
+                            '.$checkbox_html.'
+                            
+                            <div class="row g-0 align-items-center">
+                                <!-- Image Carousel -->
+                                <div class="col-4 ps-2 py-2">
+                                    '.$carousel_html.'
+                                </div>
+                                <!-- Property Info -->
+                                <div class="col-8 pe-3 py-2">
+                                    <div class="card-body p-2">
+                                        <h6 class="card-title mb-1 text-primary fw-semibold text-truncate" title="'.$property_name.'">'.$property_name.'</h6>
+                                        <p class="mb-1 small"><strong>Type:</strong> '.$property_type.'</p>
+                                        <p class="mb-1 small text-truncate" title="'.$address.'">
+                                            <strong>Address:</strong> '.$address.'
+                                        </p>
+                                        <p class="mb-0 small">
+                                            <strong>Price:</strong> ₹'.$pricing.' <small>/'.$pricing_type.'</small>
+                                        </p>
                                     </div>
                                 </div>
-                            ';
-    
+                            </div>
+                        </div>';
+
                 })
+                
 
                 // Testimonials
                 ->addColumn('testimonials_info', function ($row) {
+                    $propertyId = $row->id;
                     $testimonials = $row->testimonials;
                 
                     if ($testimonials->isEmpty()) {
@@ -145,12 +162,12 @@ class SharedRepository implements SharedRepositoryInterface
                         $user = optional($testimonial->user);
                         $userName = e($user->name ?? 'Anonymous');
                         $profileImage = $user->profile->profile_image;
-                
+                    
                         $feedback = e($testimonial->description);
                         $rating = intval($testimonial->ratings);
                         $id = $testimonial->id;
                         $enabled = $testimonial->is_active == 1 ? 'checked' : '';
-                
+                    
                         // Star rating HTML
                         $starsHtml = '';
                         for ($i = 1; $i <= 5; $i++) {
@@ -158,13 +175,20 @@ class SharedRepository implements SharedRepositoryInterface
                                 ? '<i class="bi bi-star-fill text-warning me-1"></i>'
                                 : '<i class="bi bi-star text-muted me-1"></i>';
                         }
-                
-                        // Testimonial Card HTML
+                    
+                        // Testimonial Card HTML with left-side checkbox
                         $testimonialHtml .= <<<HTML
                         <div class="card border-0 shadow-sm testimonial-card" style="transition: 0.3s;">
-                            <div class="card-body p-4">
+                            <div class="card-body p-3">
                                 <div class="d-flex align-items-start gap-3">
+                                    <!-- Left Checkbox -->
+                                    <div class="form-check mt-2">
+                                        <input type="checkbox" class="form-check-input testimonial-check" data-property-id="{$propertyId}" data-id="{$id}" id="testimonial_{$id}">
+                                    </div>
+                    
+                                    <!-- Profile and Info -->
                                     <img src="{$profileImage}" alt="Profile" width="60" height="60" class="rounded-circle border" style="object-fit: cover;">
+                                    
                                     <div class="w-100">
                                         <div class="d-flex justify-content-between align-items-start mb-2">
                                             <div>
@@ -191,6 +215,7 @@ class SharedRepository implements SharedRepositoryInterface
                         </div>
                         HTML;
                     }
+                    
                 
                     $testimonialHtml .= '</div>';
                 
@@ -260,6 +285,50 @@ class SharedRepository implements SharedRepositoryInterface
         $handler->delete($testimonial);
 
         return response()->json(['message' => 'Testimonial deleted successfully.']);
+    }
+
+    public function deleteMultipleTestimonial($request, $handler) {
+
+        $testimonial_data = GenericFormData::fromRequest($request, ['ids']);
+
+        foreach ($testimonial_data->get('ids') as $id) {
+            $testimonial = $this->testimonialSole($id);
+            $handler->delete($testimonial);
+        }
+
+        return response()->json(['message' => 'Testimonial deleted successfully.']);
+    }
+
+    public function enableMultipleTestimonial($request, $handler) {
+
+        $testimonial_data = GenericFormData::fromRequest($request, ['ids'], ['is_active' => 1]);
+        $data = [
+            'is_active' => $testimonial_data->get('is_active'),
+        ];
+        $testimonial_final = GenericFormData::fromArray($data);
+
+        foreach ($testimonial_data->get('ids') as $id) {
+            $testimonial = $this->testimonialSole($id);
+            $handler->update($testimonial_final, $testimonial);
+        }
+
+        return response()->json(['message' => 'Testimonials enabled successfully.']);
+    }
+
+    public function disableMultipleTestimonial($request, $handler) {
+
+        $testimonial_data = GenericFormData::fromRequest($request, ['ids'], ['is_active' => 0]);
+        $data = [
+            'is_active' => $testimonial_data->get('is_active'),
+        ];
+        $testimonial_final = GenericFormData::fromArray($data);
+
+        foreach ($testimonial_data->get('ids') as $id) {
+            $testimonial = $this->testimonialSole($id);
+            $handler->update($testimonial_final, $testimonial);
+        }
+
+        return response()->json(['message' => 'Testimonials disabled successfully.']);
     }
 
     public function editTestimonial($request, $handler, $testimonial) {
