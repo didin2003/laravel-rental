@@ -33,6 +33,7 @@ Route::middleware(['web'])->group(function () {
             Route::post('/register-admins', [UserController::class, 'registerAdmin'])->name('register.admins');
             Route::post('/edit-admin/{id}', [UserController::class, 'editAdmin'])->name('edit.admin');
             Route::delete('/delete-admin/{id}', [UserController::class, 'deleteAdmin'])->name('delete.admin');
+            Route::delete('delete-multiple-admins', [UserController::class, 'deleteMultipleAdmins'])->name('delete.multiple.admins');
         });
 
     });

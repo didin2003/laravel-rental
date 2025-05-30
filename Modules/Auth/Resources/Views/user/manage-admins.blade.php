@@ -48,6 +48,21 @@
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
 }
 
+#admins-table thead th {
+    vertical-align: middle;
+    background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+    color: #333;
+    font-weight: 600;
+    border-bottom: 2px solid #ccc;
+}
+
+#admins-table thead .btn-danger {
+    font-size: 0.875rem;
+    padding: 3px 10px;
+    border-radius: 0.35rem;
+}
+
+
 </style>
 <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
@@ -67,15 +82,23 @@
         </div>
         <div class="card-body">
             <table class="table table-bordered table-striped" id="admins-table" width="100%">
-                <thead class="table-light">
-                    <tr>
-                        <th>#</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th class="text-center">Action</th>
-                    </tr>
-                </thead>
+              <thead class="table-light" style="background: linear-gradient(135deg, #f8f9fa, #e9ecef);">
+                <tr class="align-middle text-center fw-semibold">
+                    <th class="rounded-start" style="min-width: 130px;">
+                        <input type="checkbox" id="selectAllAdmins" class="form-check-input me-1"> 
+                        <span id="selectAllAdminsText">Select All</span>
+                    </th>
+                    <th style="min-width: 150px;">Name</th>
+                    <th style="min-width: 200px;">Email</th>
+                    <th style="min-width: 150px;">Phone</th>
+                    <th class="rounded-end" style="min-width: 180px;">
+                        Action
+                        <button id="deleteAllAdmins" class="btn btn-danger btn-sm ms-2 deleteAllAdmins shadow-sm">
+                            <i class="bi bi-trash-fill me-1"></i> Delete All
+                        </button>
+                    </th>
+                </tr>
+              </thead>
             </table>
         </div>
     </div>
@@ -436,7 +459,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         $(document).ready(function () {
-            $('#admins-table').DataTable({
+          var adminsTable = $('#admins-table').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: '{{ route("manage.admins") }}',
@@ -448,6 +471,55 @@
                     { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
                 ]
             });
+
+            // 🔄 Pagination Click or Any Table Redraw Event
+            adminsTable.on('draw', function () {
+              $('#selectAllAdmins').prop('checked', false);
+              $('#selectAllAdminsText').text('Select All');
+            });
+
+              // Delete All Testimonials Button Click
+              $('.deleteAllAdmins').click(function () {
+              var adminIds = $('.admin-check:checked').map(function() {
+                return $(this).data('id');
+              }).get();
+
+              if (adminIds.length === 0) {
+                Swal.fire({
+                  icon: 'warning',
+                  title: 'No Selection',
+                  text: 'Please select at least one admin to delete.',
+                  confirmButtonColor: '#3085d6',
+                  confirmButtonText: 'OK'
+                });
+                return;
+              }
+
+              if (confirm("Are you sure you want to delete this admins?")) {
+                $.ajax({
+                  url: '{{ route("delete.multiple.admins") }}',
+                  type: 'DELETE',
+                  data: {
+                      _token: '{{ csrf_token() }}',
+                      ids: adminIds
+                  },
+                  success: function (response) {
+                      toastr.success(response.message);
+
+                      adminsTable.ajax.reload(null, false); // false to keep the current paging
+
+                      $('#selectAllAdmins').prop('checked', false);
+
+                  },
+                  error: function () {
+                      toastr.error('Failed to update status.');
+                  }
+                });
+              }
+            });
+
+
+            // End Document Ready
         });
     </script>
     <script>
@@ -516,6 +588,28 @@ $(document).ready(function () {
     modal.find('[name="password"]').val('');
     modal.find('[name="password_confirmation"]').val('');
   });
+
+  // Select Check Box click To Select All Checkbox
+  $("#selectAllAdmins").click(function () {
+    $(".admin-check").prop('checked', $(this).prop('checked'));
+    if ($('.admin-check:checked').length === $('.admin-check').length) {
+      $('#selectAllAdminsText').text('Disable All');
+    } else {
+      $('#selectAllAdminsText').text('Select All');
+    }
+  });
+
+    // Individual Admins Click To Trigger Select All Checkbox
+    $(document).on('click', '.admin-check', function () {
+      $('#selectAllAdmins').prop('checked', $('.admin-check:checked').length === $('.admin-check').length);
+      if ($('.admin-check:checked').length === $('.admin-check').length) {
+        $('#selectAllAdminsText').text('Disable All');
+      } else {
+        $('#selectAllAdminsText').text('Select All');
+      }
+    });
+
+  // End Document Ready
 });
 
 </script>

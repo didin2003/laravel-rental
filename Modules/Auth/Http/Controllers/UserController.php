@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Modules\Auth\Http\Requests\AdminRegisterRequest;
 use Modules\Auth\Http\Requests\EditAdminRequest;
+use Modules\Auth\Http\Requests\MultipleAdminDeleteRequest;
 use Modules\Auth\Repositories\Interfaces\UserRepositoryInterface;
 use Modules\Shared\Actions\HandleFormSubmission;
 
@@ -40,5 +41,10 @@ class UserController extends Controller
     public function deleteAdmin($id)
     {
         return $this->userRepository->deleteAdmin($id);
+    }
+
+    public function deleteMultipleAdmins(MultipleAdminDeleteRequest $request)
+    {
+        return $this->userRepository->deleteMultipleAdmins($request->ids);
     }
 }

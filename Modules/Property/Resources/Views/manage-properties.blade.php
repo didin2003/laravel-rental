@@ -80,6 +80,14 @@
     border: none;
 }
 
+#properties-table thead th {
+    vertical-align: middle;
+    background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+    color: #333;
+    font-weight: 600;
+    border-bottom: 2px solid #ccc;
+}
+
 </style>
 <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />

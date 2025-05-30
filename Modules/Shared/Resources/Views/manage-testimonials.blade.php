@@ -404,7 +404,7 @@
                 return $(this).data('id');
               }).get();
               if (testimonalIds.length === 0) {
-                alert('Please select at least one testimonial to delete.');
+                toastr.warning('Please select at least one testimonial to delete.');
                 return;
               }
               console.log('Checked IDs:', testimonalIds);
@@ -437,7 +437,7 @@
                 return $(this).data('id');
               }).get();
               if (testimonalIds.length === 0) {
-                alert('Please select at least one testimonial to enable.');
+                toastr.warning('Please select at least one testimonial to enable.');
                 return;
               }
               console.log('Checked IDs:', testimonalIds);
@@ -470,7 +470,7 @@
                 return $(this).data('id');
               }).get();
               if (testimonalIds.length === 0) {
-                alert('Please select at least one testimonial to disabled.');
+                toastr.warning('Please select at least one testimonial to disabled.');
                 return;
               }
               console.log('Checked IDs:', testimonalIds);

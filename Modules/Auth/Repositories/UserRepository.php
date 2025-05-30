@@ -104,54 +104,20 @@ class UserRepository implements UserRepositoryInterface
         $data = $this->fetchAdmins(); // assuming Spatie role is used
 
         return DataTables::of($data)
-            ->addIndexColumn()
-            // ->addColumn('action', function ($row) {
-            //     return '
-            //     <div class="d-flex flex-wrap align-items-center gap-2">
-            //         <a href="#"
-            //            class="btn btn-sm btn-primary d-flex align-items-center gap-1 shadow-sm rounded-pill px-3 py-1 edit-admin"
-            //            data-bs-toggle="modal"
-            //            data-bs-target="#editAdminModal"
-            //            data-bs-toggle="tooltip"
-            //            data-bs-placement="top"
-            //            title="Edit Admin"
-            //            data-id="'.$row->id.'"
-            //            data-name="'.e($row->name).'"
-            //            data-email="'.e($row->email).'"
-            //            data-profile-image="'.e($row->profile->profile_image).'"
-            //            data-name-as-aadhaar="'.e(optional($row->profile->aadhaar)['name_as_in_aadhaar'] ?? '').'"
-            //            data-phone="'.e(optional($row->profile)->phone ?? '').'"
-            //            data-password=""
-            //            data-flat="'.e(optional($row->profile->address)['flat'] ?? '').'"
-            //            data-street="'.e(optional($row->profile->address)['street'] ?? '').'"
-            //            data-city="'.e(optional($row->profile->address)['city'] ?? '').'"
-            //            data-state="'.e(optional($row->profile->address)['state'] ?? '').'"
-            //            data-postcode="'.e(optional($row->profile->address)['postcode'] ?? '').'"
-            //            data-aadhaar-no="'.e(optional($row->profile->aadhaar)['aadhaar_no'] ?? '').'"
-            //            data-pan-no="'.e(optional($row->profile->pan)['pan_number'] ?? '').'"
-            //            data-gst-no="'.e(optional($row->profile)->gst_number ?? '').'"
-            //            data-bank-ac-no="'.e(optional($row->profile->bank)['account_number'] ?? '').'"
-            //            data-bank-name="'.e(optional($row->profile->bank)['bank_name'] ?? '').'"
-            //            data-ifsc="'.e(optional($row->profile->bank)['ifsc'] ?? '').'"
-            //            data-branch="'.e(optional($row->profile->bank)['branch'] ?? '').'"
-            //            data-upi-no="'.e(optional($row->profile->upi)['upi_phone'] ?? '').'">
-            //             <i class="bi bi-pencil-fill"></i> <span>Edit</span>
-            //         </a>
+            // ->addIndexColumn()
 
-            //         <form action="'.route('delete.admin', $row->id).'" method="POST" class="d-inline-block" onsubmit="return confirm(\'Are you sure you want to delete this admin?\')">
-            //             '.csrf_field().method_field('DELETE').'
-            //             <button type="submit"
-            //                     class="btn btn-sm btn-danger d-flex align-items-center gap-1 shadow-sm rounded-pill px-3 py-1"
-            //                     data-bs-toggle="tooltip"
-            //                     data-bs-placement="top"
-            //                     title="Delete Admin">
-            //                 <i class="bi bi-trash3-fill"></i> <span>Delete</span>
-            //             </button>
-            //         </form>
-            //     </div>
-            //     ';
-
-            // })
+            // Replace index column with checkbox
+            ->addColumn('DT_RowIndex', function ($row) {
+                static $i = 0;
+                $i++;
+                return '
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input admin-check" data-id="'.$row->id.'" id="admin_'.$row->id.'">
+                        <label class="form-check-label" for="admin_'.$row->id.'">'.$i.'</label>
+                    </div>
+                ';
+            })
+            
             ->addColumn('user_info', function ($row) {
                 $name = e($row->name ?? 'N/A');
                 $profileImage = $row->profile->profile_image;
@@ -222,7 +188,7 @@ class UserRepository implements UserRepositoryInterface
                 ';
             })
 
-            ->rawColumns(['user_info', 'email', 'phone', 'action'])
+            ->rawColumns(['DT_RowIndex', 'user_info', 'email', 'phone', 'action'])
             ->make(true);
     }
 
@@ -369,6 +335,18 @@ class UserRepository implements UserRepositoryInterface
         $user->delete();
 
         return redirect()->route('manage.admins')->with('success', 'Owner deleted successfully!');
+    }
+    
+    public function deleteMultipleAdmins($ids)
+    {
+        foreach ($ids as $id) {
+            $user = $this->userSole($id);
+            $user->delete();
+        }
+        // $user = $this->userSole($id);
+        // $user->delete();
+
+        return response()->json(['message' => 'Multiple Owners deleted successfully!']);
     }
 
     public function superAdminAccess()
