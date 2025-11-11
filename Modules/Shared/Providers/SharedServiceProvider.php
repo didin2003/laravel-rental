@@ -11,15 +11,15 @@ class SharedServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');
-        $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
-        $this->loadViewsFrom(__DIR__.'/../Resources/views', 'shared');
-
         $this->app->bind(SharedRepositoryInterface::class, SharedRepository::class);
     }
 
     public function boot(): void
     {
+        $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');
+        $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+        $this->loadViewsFrom(__DIR__.'/../Resources/views', 'shared');
+        
         Blade::directive('headline', function ($expression) {
             return "<?php echo \Illuminate\Support\Str::headline($expression); ?>";
         });
