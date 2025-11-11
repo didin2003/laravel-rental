@@ -18,7 +18,7 @@ class PropertyServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-         $this->loadRoutesFrom(__DIR__.'/../Routes/web.php');
+        $this->loadRoutesFrom(__DIR__.'/../Routes/web.php');
         // $this->loadRoutesFrom(__DIR__ . '/../routes/api.php');
         $this->loadViewsFrom(__DIR__.'/../Resources/views', 'property');
         $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');
