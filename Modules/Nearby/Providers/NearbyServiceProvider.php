@@ -17,7 +17,7 @@ class NearbyServiceProvider extends ServiceProvider
     {
         $this->loadRoutesFrom(__DIR__.'/../Routes/web.php');
         // $this->loadRoutesFrom(__DIR__ . '/../routes/api.php');
-        $this->loadViewsFrom(__DIR__.'/../Resources/views', 'nearby');
+        $this->loadViewsFrom(__DIR__.'/../Resources/Views', 'nearby');
         $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');
     }
 }
