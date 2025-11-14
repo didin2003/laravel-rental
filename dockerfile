@@ -38,13 +38,13 @@ RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-d
 RUN php artisan optimize:clear && php artisan config:clear && php artisan route:clear
 
 #To connect database
-RUN php artisan migrate
+#RUN php artisan migrate
 
 # Generate application key
 RUN php artisan key:generate || true
 
 # inserting directly into database
-RUN php artisan db:seed
+#RUN php artisan db:seed
 
 # Set permissions for Laravel storage and cache
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
