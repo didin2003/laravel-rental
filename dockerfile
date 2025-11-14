@@ -43,6 +43,9 @@ RUN php artisan migrate
 # Generate application key
 RUN php artisan key:generate || true
 
+# inserting directly into database
+RUN php artisan db:seed
+
 # Set permissions for Laravel storage and cache
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
