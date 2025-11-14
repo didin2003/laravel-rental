@@ -20,7 +20,7 @@ class PropertyServiceProvider extends ServiceProvider
     {
         $this->loadRoutesFrom(__DIR__.'/../Routes/web.php');
         // $this->loadRoutesFrom(__DIR__ . '/../routes/api.php');
-        $this->loadViewsFrom(__DIR__.'/../Resources/views', 'property');
+        $this->loadViewsFrom(__DIR__.'/../Resources/Views', 'property');
         $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');
 
         Route::model('property', Property::class);
