@@ -18,7 +18,7 @@ class SharedServiceProvider extends ServiceProvider
     {
         $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');
         $this->loadRoutesFrom(__DIR__.'/../Routes/web.php');
-        $this->loadViewsFrom(__DIR__.'/../Resources/views', 'shared');
+        $this->loadViewsFrom(__DIR__.'/../Resources/Views', 'shared');
         
         Blade::directive('headline', function ($expression) {
             return "<?php echo \Illuminate\Support\Str::headline($expression); ?>";
