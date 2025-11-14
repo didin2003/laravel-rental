@@ -4,7 +4,7 @@ FROM php:8.2-fpm
 # Set working directory
 WORKDIR /var/www
 
-# Install system dependencies
+# Install system dependencies + Nginx
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -19,6 +19,7 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     nodejs \
     npm \
+    nginx \
  && docker-php-ext-configure gd --with-freetype --with-jpeg \
  && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip \
  && apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -47,8 +48,17 @@ RUN npm prune --production
 # Set correct permissions
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
-# Expose PHP-FPM port
+# Configure Nginx
+RUN rm /etc/nginx/sites-enabled/default
+RUN ln -s /etc/nginx/sites-available/rental.web /etc/nginx/sites-enabled/
+
+# Expose ports
+EXPOSE 80
 EXPOSE 9000
 
-# ⚠️ The correct production CMD – DO NOT run artisan serve
-CMD ["php-fpm"]
+# Start supervisord to run PHP-FPM + Nginx together
+RUN apt-get update && apt-get install -y supervisor && apt-get clean
+
+COPY ./docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
