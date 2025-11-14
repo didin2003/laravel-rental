@@ -18,7 +18,7 @@ class AmenityServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->loadRoutesFrom(__DIR__.'/../Routes/web.php');
-        $this->loadViewsFrom(__DIR__.'/../Resources/views', 'amenity');
+        $this->loadViewsFrom(__DIR__.'/../Resources/Views', 'amenity');
         $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');
     }
 }
