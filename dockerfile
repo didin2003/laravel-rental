@@ -38,7 +38,7 @@ RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-d
 RUN php artisan optimize:clear && php artisan config:clear && php artisan route:clear
 
 #To connect database
-RUN php artisan migrate || true
+RUN php artisan migrate
 
 # Generate application key
 RUN php artisan key:generate || true
