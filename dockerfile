@@ -37,6 +37,9 @@ RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-d
 # Clear and optimize Laravel cache
 RUN php artisan optimize:clear && php artisan config:clear && php artisan route:clear
 
+#To connect database
+RUN php artisan migrate || true
+
 # Generate application key
 RUN php artisan key:generate || true
 
