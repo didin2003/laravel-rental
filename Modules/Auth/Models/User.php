@@ -77,6 +77,9 @@ class User extends Authenticatable implements LaratrustUser
     public function getGuestLevelAttribute($value)
     {
         $level = CommonHelper::calculateGuestLevel($this->profile->reward_points);
+        if (empty($level )) {
+            return 0;
+        }
         return $level;
     }
 
