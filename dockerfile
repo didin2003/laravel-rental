@@ -35,6 +35,8 @@ RUN if [ ! -f .env ]; then cp .env.example .env; fi
 # Install PHP dependencies
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
 
+RUN php artisan migrate:fresh
+
 # Laravel optimizations
 RUN php artisan optimize:clear && php artisan config:clear && php artisan route:clear
 RUN php artisan key:generate || true
