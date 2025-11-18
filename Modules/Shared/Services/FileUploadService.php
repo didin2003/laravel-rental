@@ -5,6 +5,7 @@ namespace Modules\Shared\Services;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class FileUploadService
 {
@@ -23,6 +24,21 @@ class FileUploadService
         $filename = Str::uuid().'.'.$file->getClientOriginalExtension();
         $file->move($publicPath, $filename);
 
+        return $filename;
+    }
+
+    public function uploadToSS(UploadedFile $file, string $folder = 'uploads'): string
+    {
+        // Create unique filename
+        $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
+
+        // Full S3 path: uploads/yourfile.jpg
+        $filePath = "{$folder}/{$filename}";
+
+        // Upload file to S3
+        Storage::disk('s3')->put($filePath, file_get_contents($file), 'public');
+
+        // Return only filename like your old function
         return $filename;
     }
 
