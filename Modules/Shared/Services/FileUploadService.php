@@ -33,7 +33,7 @@ class FileUploadService
         $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
 
         // Full S3 path: uploads/yourfile.jpg
-        $filePath = $filename;
+        $filePath = "{$folder}/{$filename}";
 
         // Upload file to S3
         Storage::disk('s3')->put($filePath, file_get_contents($file));
