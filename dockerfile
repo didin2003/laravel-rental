@@ -49,6 +49,8 @@ RUN npm prune --production
 # Set correct permissions
 RUN chown -R www-data:www-data /var/www/public/assets/images/
 RUN chmod -R 755 /var/www/public/assets/images/
+RUN chmod -R 775 /var/www/storage
+RUN chmod -R 775 /var/www/bootstrap
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
 # Expose PHP-FPM port
