@@ -11,6 +11,7 @@ use Modules\Property\Models\Property;
 use Modules\Shared\Data\GenericFormData;
 use Modules\Shared\Services\FileUploadService;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Storage;
 
 class AmenityRepository implements AmenityRepositoryInterface
 {
@@ -77,7 +78,7 @@ class AmenityRepository implements AmenityRepositoryInterface
             })
 
             ->addColumn('icon', function ($row) {
-                $iconPath = asset('assets/images/amenities/'.$row->icon); // adjust folder path as needed
+                $iconPath = Storage::disk('s3')->url('amenities/'.$row->icon);
 
                 return '
                 <div class="p-2 bg-light border rounded shadow-sm d-flex flex-wrap align-items-center gap-2">
@@ -147,10 +148,10 @@ class AmenityRepository implements AmenityRepositoryInterface
 
         // File Upload
         if ($request->hasFile('icon')) {
-            $imagePath = $this->uploadService->uploadToPublic(
-                $request->file('icon'),
-                'amenities'
-            );
+            $imagePath = $this->uploadService->uploadToSS(
+                        $request->file('icon'),
+                        'amenities'
+                        );
         }
 
         $amenity_data = GenericFormData::fromRequest($request, ['name', 'icon'], ['user_id' => Auth::user()->id]);
