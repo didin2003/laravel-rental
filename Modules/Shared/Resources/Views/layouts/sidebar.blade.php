@@ -21,7 +21,7 @@
             <div class="card-body p-2">
                 <i class="bi bi-star-fill text-warning fs-4"></i>
                 <p class="mb-0 small text-muted">Rewards</p>
-                <strong class="text-dark">{{auth()->user()->profile->reward_points ?? 0}} Points</strong>
+                <strong class="text-dark">{{!empty(auth()->user()->profile->reward_points) ? auth()->user()->profile->reward_points : 0 }} Points</strong>
             </div>
         </div>
     </div>
