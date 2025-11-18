@@ -30,7 +30,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 COPY . .
 
 # Ensure .env exists
-RUN if [ ! -f .env ]; then cp .env.example .env; fi
+# RUN if [ ! -f .env ]; then cp .env.example .env; fi
 
 # Install PHP dependencies
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
