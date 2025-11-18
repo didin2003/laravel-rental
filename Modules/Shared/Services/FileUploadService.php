@@ -36,7 +36,7 @@ class FileUploadService
         $filePath = $filename;
 
         // Upload file to S3
-        Storage::disk('s3')->put($filePath, file_get_contents($file), 'public');
+        Storage::disk('s3')->put($filePath, file_get_contents($file));
 
         // Return only filename like your old function
         return $filename;
