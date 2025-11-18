@@ -47,6 +47,8 @@ RUN npm install && npm run build
 RUN npm prune --production
 
 # Set correct permissions
+RUN chown -R www-data:www-data /var/www/public/assets/images/user
+chmod -R 755 /var/www/public/assets/images/user
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
 # Expose PHP-FPM port
