@@ -78,7 +78,7 @@ class AmenityRepository implements AmenityRepositoryInterface
             })
 
             ->addColumn('icon', function ($row) {
-                $iconPath = Storage::disk('s3')->url('amenities/'.$row->icon);
+                $iconPath = Storage::disk('s3')->url($row->icon);
 
                 return '
                 <div class="p-2 bg-light border rounded shadow-sm d-flex flex-wrap align-items-center gap-2">
