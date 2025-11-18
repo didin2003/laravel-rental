@@ -5,6 +5,7 @@ use Modules\Auth\Http\Controllers\AuthController;
 use Modules\Auth\Http\Controllers\UserController;
 
 Route::middleware(['web'])->group(function () {
+    Route::redirect('/','login');
     Route::get('login', [AuthController::class, 'loginForm'])->name('login.form');
     Route::post('login', [AuthController::class, 'login'])->name('login');
 
